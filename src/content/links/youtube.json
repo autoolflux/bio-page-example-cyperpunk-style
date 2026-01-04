@@ -1,0 +1,9 @@
+{
+    "id": "youtube",
+    "title": "Latest Tutorial: Astro Bio-Link",
+    "url": "https://youtube.com/watch?v=example",
+    "icon": "Youtube",
+    "isFeatured": true,
+    "layout": "large",
+    "color": "#FF0000"
+}

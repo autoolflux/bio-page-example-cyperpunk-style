@@ -1,0 +1,172 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import { LinkCard } from "../components/LinkCard";
+import { VCardButton } from "../components/VCardButton";
+
+// Fetch Data
+const profileEntries = await getCollection("profile");
+const profile =
+	profileEntries.find((p) => p.id === "me")?.data || profileEntries[0]?.data;
+
+if (!profile) {
+	throw new Error(
+		"Profile data not found. Please create src/content/profile/me.json",
+	);
+}
+
+const links = await getCollection("links");
+// Sort: Featured first, then by layout priority? Or just source order?
+// Let's sort featured first.
+const sortedLinks = links.sort((a, b) => {
+	if (a.data.isFeatured === b.data.isFeatured) return 0;
+	return a.data.isFeatured ? -1 : 1;
+});
+
+const socials = await getCollection("socials");
+const sortedSocials = socials.sort(
+	(a, b) => (a.data.order || 0) - (b.data.order || 0),
+);
+---
+
+<Layout title={`${profile.name} - Bio Link`}>
+	<!-- Profile Header -->
+	<section
+		class="flex flex-col items-center text-center space-y-6 animate-fade-in-up mb-8"
+	>
+		<div class="relative group cursor-pointer">
+			<div
+				class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"
+			>
+			</div>
+			<div
+				class="relative w-32 h-32 md:w-40 md:h-40 rounded-full p-1 bg-black/50 backdrop-blur-sm overflow-hidden ring-1 ring-white/20"
+			>
+				<Image
+					src={profile.avatar}
+					alt={profile.name}
+					width={160}
+					height={160}
+					class="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform duration-500"
+					loading="eager"
+				/>
+			</div>
+			{
+				profile.verified && (
+					<div
+						class="absolute bottom-2 right-2 bg-blue-500 text-white p-1.5 rounded-full ring-4 ring-[#0a0a0a]"
+						title="Verified"
+					>
+						<svg
+							class="w-4 h-4"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="3"
+								d="M5 13l4 4L19 7"
+							/>
+						</svg>
+					</div>
+				)
+			}
+		</div>
+
+		<div class="space-y-3">
+			<h1
+				class="text-3xl md:text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/50"
+			>
+				{profile.name}
+			</h1>
+			<p class="text-white/60 max-w-sm mx-auto text-lg">{profile.bio}</p>
+			<div
+				class="flex items-center justify-center gap-2 text-sm text-white/40"
+			>
+				<svg
+					class="w-4 h-4"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+					><path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+					></path><path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg
+				>
+				{profile.location}
+			</div>
+		</div>
+
+		<div class="flex flex-wrap justify-center gap-4">
+			<VCardButton client:visible name={profile.name} />
+		</div>
+	</section>
+
+	<!-- Bento Grid -->
+	<section class="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-auto">
+		{
+			/* Socials as Small Cards (First in logic or separate? Mixing them in is cool) */
+		}
+		{
+			/* Let's put socials in a specific block or mix them. 
+            User requirement: "Small Card (Square): Các icon mạng xã hội or stats".
+            I'll render Socials as small cards at the start or end? 
+            Maybe integrated. I'll append them to the grid.
+        */
+		}
+
+		{
+			sortedLinks.map((link) => (
+				<LinkCard
+					client:visible
+					title={link.data.title}
+					url={link.data.url}
+					iconName={link.data.icon}
+					layout={link.data.layout}
+					color={link.data.color}
+					isFeatured={link.data.isFeatured}
+				/>
+			))
+		}
+
+		{
+			sortedSocials.map((social) => (
+				<LinkCard
+					client:visible
+					title={social.data.platform}
+					url={social.data.url}
+					iconName={social.data.icon}
+					layout="small"
+					className="bg-white/5 hover:bg-white/10"
+				/>
+			))
+		}
+	</section>
+
+	<footer class="mt-20 text-center text-white/20 text-sm pb-8">
+		<p>© {new Date().getFullYear()} {profile.name}. All rights reserved.</p>
+	</footer>
+</Layout>
+
+<style>
+	.animate-fade-in-up {
+		animation: fadeInUp 0.8s ease-out forwards;
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	@keyframes fadeInUp {
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+</style>
