@@ -2,6 +2,8 @@
 
 Welcome to the **Modern Bio-Link Page** template. This is a high-performance personal landing page (Link-in-bio) built with a modern Bento Grid layout, premium aesthetics, and lightning-fast speed.
 
+📖 **Official Page:** [Launchlean.dev](https://launchlean.dev)
+
 ## ✨ Key Features
 - ⚡ **Ultra Fast:** Powered by Astro 5.0 (SSG) for near-instant page loads.
 - 🍱 **Bento Grid Layout:** Fully responsive and flexible content grid.
@@ -103,6 +105,8 @@ These will always render as `small` cards at the end of the grid.
 ---
 
 ## 🚀 Deployment
+
+For a detailed walkthrough, check out the [Official Deployment Guide](https://launchlean.dev/guides/bio-page-deploy-guide/).
 
 ### Build the Project
 ```bash
